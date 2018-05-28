@@ -1,6 +1,6 @@
-=== Buffer Tools
+# Buffer Tools
 
-== WIP tool for manipulating Vim buffers
+## WIP tool for manipulating Vim buffers
 
 ---
 Author: Graeme Faichney
