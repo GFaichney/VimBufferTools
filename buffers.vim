@@ -1,5 +1,8 @@
 let g:BufferToolsBufferName = 'BufferToolsBuffer'
 
+function! LastWindow()
+  return winnr() == 1 && winnr('$') == 1
+endfunction
 
 function! GetBufferDisplayFlags(buffer)
   let a:dispFlags = ''
@@ -48,7 +51,6 @@ function! JumpToSelectedBuffer()
   let a:num = GetSelectedBufferNumber()
   exec t:winStartedFrom . 'wincmd w'
   execute "b" . a:num
-  call CloseToolsBuffer()
 endfunction
 
 function! DeleteSelectedBuffer()
@@ -83,13 +85,24 @@ function! RefreshToolsBufferContents()
   " set nomodifiable
 endfunction
 
+fu! s:setupblank()
+	setl noswf nonu nobl nowrap nolist nospell nocuc wfh
+	setl fdc=0 fdl=99 tw=0 bt=nofile bh=unload
+	if v:version > 702
+		setl nornu noudf cc=0
+	en
+	if s:has_conceal
+		setl cole=2 cocu=nc
+	en
+endf
+
 function! ToolsBuffer()
   let t:winStartedFrom=winnr()
   new g:BufferToolsBufferName
+	setl noswf nonu nobl nowrap nolist nospell nocuc wfh
+	setl fdc=0 fdl=99 tw=0 bt=nofile bh=unload
   wincmd J
   resize 10
-  set ft=nofile
-  set nonu
 
   call RefreshToolsBufferContents()
   set cursorline
@@ -129,8 +142,7 @@ endfunction
 function! EnableToolsBufferAutoCMD()
   augroup ToolsBuffer
     autocmd!
-    "au BufLeave <buffer> call CloseToolsBuffer()
-    " TODO
+    au BufLeave <buffer> noautocmd call CloseToolsBuffer()
   augroup END
 endfunction
 
@@ -146,9 +158,19 @@ function! IsToolsBufferShowing()
 endfunction
 
 function! CloseToolsBuffer()
-  call DisableToolsBufferAutoCMD()
-  exec t:winStartedFrom . 'wincmd w'
-  execute "bd! " . g:BufferToolsBufferName
+  try
+    bunload!
+  catch
+    close!
+  endtry
 endfunction
 
-nmap <c-b> :call ToolsBuffer()<CR>
+function! InitShortcuts()
+  if exists("g:VimToolsBufferOpen")
+    exec "nmap " . g:VimToolsBufferOpen . " :call ToolsBuffer()"
+  else
+    nmap <c-b> :call ToolsBuffer()<CR>
+  endif  
+endfunction
+
+call InitShortcuts()
