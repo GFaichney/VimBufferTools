@@ -85,33 +85,26 @@ function! RefreshToolsBufferContents()
   " set nomodifiable
 endfunction
 
-fu! s:setupblank()
-	setl noswf nonu nobl nowrap nolist nospell nocuc wfh
-	setl fdc=0 fdl=99 tw=0 bt=nofile bh=unload
-	if v:version > 702
-		setl nornu noudf cc=0
-	en
-	if s:has_conceal
-		setl cole=2 cocu=nc
-	en
-endf
-
 function! ToolsBuffer()
   let t:winStartedFrom=winnr()
   new g:BufferToolsBufferName
-	setl noswf nonu nobl nowrap nolist nospell nocuc wfh
-	setl fdc=0 fdl=99 tw=0 bt=nofile bh=unload
+	setl noswapfile nonumber nobuflisted nowrap nolist nospell nocursorcolumn winfixheight
+	setl foldcolumn=0
+  setl foldlevel=99
+  setl textwidth=0
+  setl bt=nofile
+  setl bufhidden=unload
   wincmd J
   resize 10
 
   call RefreshToolsBufferContents()
   set cursorline
   set readonly
-  nmap <buffer> <CR> :call JumpToSelectedBuffer()<CR>
-  nmap <buffer> s :call SaveSelectedBuffer()<CR>
-  nmap <buffer> d :call DeleteSelectedBuffer()<CR>
-  nmap <buffer> q :call CloseToolsBuffer()<CR>
-  nmap <buffer> <c-b> :call CloseToolsBuffer()<CR>
+  nmap <buffer> <silent> <CR> :call JumpToSelectedBuffer()<CR>
+  nmap <buffer> <silent> s :call SaveSelectedBuffer()<CR>
+  nmap <buffer> <silent> d :call DeleteSelectedBuffer()<CR>
+  nmap <buffer> <silent> q :call CloseToolsBuffer()<CR>
+  nmap <buffer> <silent> <c-b> :call CloseToolsBuffer()<CR>
 
   call EnableToolsBufferAutoCMD()
 endfunction
