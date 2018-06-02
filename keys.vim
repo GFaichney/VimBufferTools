@@ -7,6 +7,13 @@ function! g:InputProcessor.New(...)
   else
     let newObj.callbacks = {}
   endif
+
+  if has_key(newObj.callbacks, 'stop')
+    let newObj.stopKey = newObj.callbacks['stop']
+  else
+    let newObj.stopKey = "nostop"
+  endif
+
   return newObj
 endfunction
 
@@ -24,9 +31,9 @@ endfunction
 
 function! g:InputProcessor.ProcessInput() dict
   let a:c = ""
-  while a:c != "\<up>"
+  while a:c != self.stopKey
     let a:c = getchar()
-    if a:c != "\<up>"
+    if a:c != self.stopKey
       if !has_key(self.callbacks, a:c)
         if a:c == "\<BS>"
           call self.RemoveLastChar()
@@ -44,6 +51,14 @@ function! g:InputProcessor.ProcessInput() dict
       endif
     endif
   endwhile
+  call self.OnEnd()
+endfunction
+
+function! g:InputProcessor.OnEnd()
+  if has_key(self.callbacks, 'onEnd')
+    let a:Callback = function(self.callbacks['onEnd'])
+    call a:Callback(self.currStr)
+  endif
 endfunction
 
 function! g:InputProcessor.OnPrintableCharacter(word) dict
@@ -55,6 +70,12 @@ function! g:InputProcessor.ReadLine() dict
   call self.ProcessInput()
 endfunction
 
+function! g:InputProcessor.AddMapping(mapping, callback)
+  let self.callbacks[a:mapping] = a:callback
+endfunction
+
+"""""""""""""""""""""""""""""""""""""""""
+" Test functions
 """""""""""""""""""""""""""""""""""""""""
 
 function! CallDown()
@@ -66,7 +87,12 @@ function! WordChangeCallback(word)
   echo "Word: " . a:word
 endfunction
 
+function! CallMeWhenDone(word)
+  echo "Done: " . a:word
+endfunction
+
 function! RunMe()
-  let inputProcessor = g:InputProcessor.New({"\<down>":'CallDown', "onChange": 'WordChangeCallback'})
+  let inputProcessor = g:InputProcessor.New({"\<down>":'CallDown', "onChange": 'WordChangeCallback', "stop": "\<Home>"})
+  call inputProcessor.AddMapping('onEnd', 'CallMeWhenDone')
   call inputProcessor.ReadLine()
 endfunction
