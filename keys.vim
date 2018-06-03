@@ -23,7 +23,7 @@ function! g:InputProcessor.DoTextChangeCallback()
     call a:Callback(self.currStr)
   endif
 endfunction
-
+ 
 function! g:InputProcessor.RemoveLastChar() dict
   let self.currStr = self.currStr[0:strlen(self.currStr)-2]
   call self.DoTextChangeCallback()

@@ -1,3 +1,5 @@
+source highlights.vim
+
 let g:BufferToolsBufferName = 'BufferToolsBuffer'
 
 function! LastWindow()
@@ -34,7 +36,11 @@ function! GetBufferDetails()
     if !empty(a:buf.listed)
       let a:dstring = GetBufferDisplayString(a:buf)
       if match(a:dstring, g:BufferToolsBufferName) == -1
-        call add(a:blist, a:dstring)
+        let a:bdetails = {'line': a:dstring, 'changed':0}
+        if !empty(a:buf.changed)
+          let a:bdetails.changed = 1
+        endif
+        call add(a:blist, a:bdetails)
       endif
     endif
   endfor
@@ -80,10 +86,17 @@ function! RefreshToolsBufferContents()
   " set modifiable
   execute "normal! gg"
   silent! execute "normal! dG"
-  silent! call append(line('^'), GetBufferDetails())
+  let a:blines = GetBufferDetails()
+
+  for a:ln in a:blines
+    silent! call append(line('^'), a:ln.line)
+    if a:ln.changed
+  exe ":sign place 2 line=1 name=vbt_modified file=" . expand("%:p")
+endif
+  endfor
+
   silent! execute "normal! dd"
   stopinsert
-
   " set nomodifiable
 endfunction
 
