@@ -80,7 +80,6 @@ endfunction
 
 function! CallDown()
   echo "Down pressed!"
-  call feedkeys("\<C-W>\<C-W>")
 endfunction
 
 function! WordChangeCallback(word)
@@ -96,3 +95,4 @@ function! RunMe()
   call inputProcessor.AddMapping('onEnd', 'CallMeWhenDone')
   call inputProcessor.ReadLine()
 endfunction
+

@@ -4,6 +4,7 @@ function! LastWindow()
   return winnr() == 1 && winnr('$') == 1
 endfunction
 
+
 function! GetBufferDisplayFlags(buffer)
   let a:dispFlags = ''
   if empty(a:buffer.changed)
@@ -63,6 +64,7 @@ function! DeleteSelectedBuffer()
 endfunction
 
 function! SaveSelectedBuffer()
+  call DisableToolsBufferAutoCMD()
   let a:num = GetSelectedBufferNumber()
   let a:currbuff = bufnr('%')
 
@@ -71,15 +73,15 @@ function! SaveSelectedBuffer()
   execute "b" . a:currbuff 
 
   call RefreshToolsBufferContents()
+  call EnableToolsBufferAutoCMD()
 endfunction 
 
 function! RefreshToolsBufferContents()
   " set modifiable
-
   execute "normal! gg"
-  execute "normal! dG"
-  call append(line('^'), GetBufferDetails())
-  execute "normal! dd"
+  silent! execute "normal! dG"
+  silent! call append(line('^'), GetBufferDetails())
+  silent! execute "normal! dd"
   stopinsert
 
   " set nomodifiable
@@ -87,6 +89,7 @@ endfunction
 
 function! ToolsBuffer()
   let t:winStartedFrom=winnr()
+  let t:bufStartedFrom=bufnr('%')
   new g:BufferToolsBufferName
 	setl noswapfile nonumber nobuflisted nowrap nolist nospell nocursorcolumn winfixheight
 	setl foldcolumn=0
@@ -96,7 +99,7 @@ function! ToolsBuffer()
   setl bufhidden=unload
   wincmd J
   resize 10
-
+ 
   call RefreshToolsBufferContents()
   set cursorline
   set readonly
@@ -167,3 +170,16 @@ function! InitShortcuts()
 endfunction
 
 call InitShortcuts()
+
+
+"""""""""""""""""""""""""""""""""""""""
+" Test functions
+"""""""""""""""""""""""""""""""""""""""
+
+function! DisplayDisplayInfo()
+  let toalLines = line('w$')
+  let visibleLines = line('w$') - line('w0')
+  let winHeight = winheight(winnr())
+  echo 'Visible: ' . visibleLines . ' Total: ' . toalLines . ' Winheight: ' . winHeight
+endfunction
+
