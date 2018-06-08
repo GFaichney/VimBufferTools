@@ -6,7 +6,6 @@ function! LastWindow()
   return winnr() == 1 && winnr('$') == 1
 endfunction
 
-
 function! GetBufferDisplayFlags(buffer)
   let a:dispFlags = ''
   if empty(a:buffer.changed)
@@ -23,7 +22,6 @@ function! GetBufferDisplayFlags(buffer)
 
   return '[' . a:dispFlags . ']'
 endfunction
-
 
 function! GetBufferDisplayString(buffer)
   return a:buffer.bufnr . ' - ' . GetBufferDisplayFlags(a:buffer) . ' ' . a:buffer.name
@@ -64,9 +62,23 @@ function! DeleteSelectedBuffer()
   let a:num = GetSelectedBufferNumber()
   let a:currbuff = bufnr('%')
 
-  execute "bdelete " . a:num
+  let a:res = IsSelectedBufferCurrent()
+  if !a:res
+    execute "bdelete " . a:num
+  else
+    echo "Cannot delete current buffer"
+  endif
 
   call RefreshToolsBufferContents()
+endfunction
+
+function! IsSelectedBufferCurrent()
+  let a:num = GetSelectedBufferNumber()
+  if a:num == t:bufStartedFrom
+    return 1
+  else
+    return 0
+  endif
 endfunction
 
 function! SaveSelectedBuffer()
@@ -91,8 +103,8 @@ function! RefreshToolsBufferContents()
   for a:ln in a:blines
     silent! call append(line('^'), a:ln.line)
     if a:ln.changed
-  exe ":sign place 2 line=1 name=vbt_modified file=" . expand("%:p")
-endif
+      exe ":sign place 2 line=1 name=vbt_modified file=" . expand("%:p")
+    endif
   endfor
 
   silent! execute "normal! dd"
@@ -183,7 +195,6 @@ function! InitShortcuts()
 endfunction
 
 call InitShortcuts()
-
 
 """""""""""""""""""""""""""""""""""""""
 " Test functions
