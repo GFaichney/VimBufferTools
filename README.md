@@ -8,7 +8,7 @@
 
 When in buffer window:
 
-**q** Quit buffer window
-**s** Save currently highlighted buffer
-**d** Delete currently highlighted buffer
+Press: **q** Quit buffer window
+Press: **s** Save currently highlighted buffer
+Press: **d** Delete currently highlighted buffer
 
