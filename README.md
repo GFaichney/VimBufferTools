@@ -1,12 +1,14 @@
 # VIM Buffer Tools
 
-## WIP tool for manipulating Vim buffers
+## WIP tool for switching and manipulating Vim buffers
 
 ### Usage
 
 **ctrl-b** Open buffer window
 
 When in buffer window:
+
+**<enter>** Switch to currently highlighted buffer
 
 **q** Quit buffer window
 
