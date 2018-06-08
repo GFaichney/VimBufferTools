@@ -8,7 +8,7 @@
 
 When in buffer window:
 
-**[enter]>** Switch to currently highlighted buffer
+**[enter]** Switch to currently highlighted buffer
 
 **q** Quit buffer window
 
