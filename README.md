@@ -4,7 +4,7 @@
 
 ### Usage
 
-**<ctrl-b>** Open buffer window
+**ctrl-b** Open buffer window
 
 When in buffer window:
 
