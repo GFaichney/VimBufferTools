@@ -16,3 +16,4 @@ When in buffer window:
 
 **d** Delete currently highlighted buffer
 
+

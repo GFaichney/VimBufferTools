@@ -34,7 +34,7 @@ function! GetBufferDetails()
     if !empty(a:buf.listed)
       let a:dstring = GetBufferDisplayString(a:buf)
       if match(a:dstring, g:BufferToolsBufferName) == -1
-        let a:bdetails = {'line': a:dstring, 'changed':0}
+        let a:bdetails = {'line': a:dstring, 'changed':0, 'num': a:buf.bufnr}
         if !empty(a:buf.changed)
           let a:bdetails.changed = 1
         endif
@@ -102,8 +102,12 @@ function! RefreshToolsBufferContents()
 
   for a:ln in a:blines
     silent! call append(line('^'), a:ln.line)
+    let a:currline = 0
     if a:ln.changed
       exe ":sign place 2 line=1 name=vbt_modified file=" . expand("%:p")
+      if t:bufStartedFrom == a:ln.num
+        let a:currline = line('$')
+      endif
     endif
   endfor
 
@@ -133,7 +137,7 @@ function! ToolsBuffer()
   nmap <buffer> <silent> d :call DeleteSelectedBuffer()<CR>
   nmap <buffer> <silent> q :call CloseToolsBuffer()<CR>
   nmap <buffer> <silent> <c-b> :call CloseToolsBuffer()<CR>
-
+  silent! exe "/" . t:bufStartedFrom . " "
   call EnableToolsBufferAutoCMD()
 endfunction
 
